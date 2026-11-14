@@ -2,15 +2,27 @@
   "name": "cybercrime",
   "version": "1.0.0",
   "type": "module",
-  "description": "\"Your Digital Safety. Our Intelligent Assistance.\"",
+  "description": "CYBERSHIELD AI - AI-Powered Cybercrime Complaint & FIR Assistance Command Center",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "install:all": "npm install && npm --prefix backend install && npm --prefix frontend install",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "build": "npm --prefix backend run build && npm --prefix frontend run build",
+    "test": "npm --prefix backend test"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "cybercrime",
+    "ai",
+    "legal-tech",
+    "groq",
+    "gemini",
+    "react",
+    "nextjs"
+  ],
+  "author": "CyberShield AI Team",
   "license": "ISC",
   "dependencies": {
-    "zod": "^4.6.7"
+    "zod": "^3.23.8"
   }
 }
