@@ -1,0 +1,120 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+  
+  body {
+    background-color: #EAE6E2;
+    color: #0F172A;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* Deep high-contrast headings on light surfaces */
+  h1, h2, h3, h4, h5, h6 {
+    color: #0F172A;
+  }
+
+  /* Headings on dark backgrounds (obsidian cards, dark buttons) must be bold crisp white */
+  .dark-card h1, .dark-card h2, .dark-card h3, .dark-card h4, .dark-card h5, .dark-card h6,
+  [class*="bg-[#121214]"] h1, [class*="bg-[#121214]"] h2, [class*="bg-[#121214]"] h3, [class*="bg-[#121214]"] h4, [class*="bg-[#121214]"] h5, [class*="bg-[#121214]"] h6,
+  [class*="bg-[#111113]"] h1, [class*="bg-[#111113]"] h2, [class*="bg-[#111113]"] h3, [class*="bg-[#111113]"] h4, [class*="bg-[#111113]"] h5, [class*="bg-[#111113]"] h6,
+  [class*="bg-[#202024]"] h1, [class*="bg-[#202024]"] h2, [class*="bg-[#202024]"] h3, [class*="bg-[#202024]"] h4, [class*="bg-[#202024]"] h5, [class*="bg-[#202024]"] h6,
+  [class*="bg-black"] h1, [class*="bg-black"] h2, [class*="bg-black"] h3, [class*="bg-black"] h4, [class*="bg-black"] h5, [class*="bg-black"] h6,
+  [class*="bg-[#E6325B]"] h1, [class*="bg-[#E6325B]"] h2, [class*="bg-[#E6325B]"] h3, [class*="bg-[#E6325B]"] h4, [class*="bg-[#E6325B]"] h5, [class*="bg-[#E6325B]"] h6,
+  button[class*="bg-[#E6325B]"] *,
+  button[class*="bg-[#121214]"] *,
+  button[class*="bg-black"] * {
+    color: #FFFFFF !important;
+  }
+
+  /* Custom Sleek Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #EAE6E2;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #D5D0CB;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #E6325B;
+  }
+}
+
+@layer utilities {
+  .glass-card {
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(229, 226, 222, 0.9);
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+  }
+  
+  .glass-card-hover {
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .glass-card-hover:hover {
+    background: #FFFFFF;
+    border-color: #E6325B;
+    box-shadow: 0 10px 30px -10px rgba(230, 50, 91, 0.15);
+    transform: translateY(-2px);
+  }
+
+  .cyber-gradient-text {
+    background: linear-gradient(135deg, #E6325B 0%, #0F172A 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .cyber-gradient-gold {
+    background: linear-gradient(135deg, #E6325B 0%, #D0244C 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* =========================================================================
+     HIGH-CONTRAST LEGIBILITY RULES
+     Ensures all body text, cards, labels, and icons are sharp, dark, and visible
+     ========================================================================= */
+  
+  /* Obsidian and Dark Card text is always crisp, bold white */
+  .dark-card h1, .dark-card h2, .dark-card h3, .dark-card h4, .dark-card h5, .dark-card h6 {
+    color: #FFFFFF !important;
+  }
+
+  /* Force dark contrast on light mode muted/secondary text classes */
+  .text-slate-400:not(.dark-card *),
+  .text-slate-500:not(.dark-card *),
+  .text-gray-400:not(.dark-card *),
+  .text-gray-500:not(.dark-card *) {
+    color: #334155 !important;
+  }
+
+  .text-cyber-muted:not(.dark-card *) {
+    color: #334155 !important;
+  }
+
+  /* Neon cyan text in dark mode becomes bold dark crimson or dark slate in light mode for readability */
+  .text-cyber-cyan:not([class*="bg-[#121214]"] *):not([class*="bg-[#111113]"] *) {
+    color: #E6325B !important;
+  }
+
+  /* Input fields: sharp dark text and clean light backgrounds */
+  input, textarea, select {
+    color: #0F172A !important;
+    background-color: #FFFFFF !important;
+    border-color: #E5E2DE !important;
+  }
+
+  input::placeholder, textarea::placeholder {
+    color: #64748B !important;
+  }
+}

@@ -1,0 +1,25 @@
+# Node modules and build output
+node_modules/
+.next/
+dist/
+build/
+out/
+
+# Environment and sensitive keys
+.env
+.env.local
+.env*.local
+*.pem
+*.key
+
+# Temporary files and logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+*.log
+uploads/
+
+# OS metadata
+.DS_Store
+Thumbs.db

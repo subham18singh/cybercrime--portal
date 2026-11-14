@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 170 50" fill="none">
+  <defs>
+    <linearGradient id="elGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8B5CF6" />
+      <stop offset="100%" stop-color="#367BFF" />
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="166" height="46" rx="23" fill="#0D1630" stroke="url(#elGrad)" stroke-width="1.8"/>
+  <circle cx="25" cy="25" r="14" fill="#8B5CF6" fill-opacity="0.15" stroke="#8B5CF6" stroke-width="1.5"/>
+  <rect x="20" y="23" width="10" height="9" rx="1.5" stroke="#8B5CF6" stroke-width="1.8"/>
+  <path d="M22 23 V19 C22 17.3 23.3 16 25 16 C26.7 16 28 17.3 28 19 V23" stroke="#8B5CF6" stroke-width="1.8"/>
+  <text x="48" y="24" fill="#FFFFFF" font-family="'Space Grotesk', sans-serif" font-weight="700" font-size="11" letter-spacing="0.5">VAULT ENCRYPTION</text>
+  <text x="48" y="38" fill="#8B5CF6" font-family="'Inter', sans-serif" font-weight="600" font-size="9">AES-256 OCR Anonymized</text>
+</svg>
