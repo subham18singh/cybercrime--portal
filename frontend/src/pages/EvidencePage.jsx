@@ -71,39 +71,6 @@ export const EvidencePage = () => {
     setEvidenceList((prev) => [...prev, demoExhibit]);
   };
 
-  const handleLoadTrainTicketDemo = () => {
-    const ticketExhibit = {
-      filename: 'irctc_train_ticket_pnr_8471920194.png',
-      originalName: 'IRCTC_Train_Ticket_Fare_₹125.png',
-      fileType: 'IMAGE/PNG',
-      fileSize: 312400,
-      url: '#',
-      uploadedAt: new Date().toISOString(),
-      forensic: {
-        isValidCyberEvidence: false,
-        documentCategory: 'IRCTC_RAILWAY_TICKET',
-        utrNumber: null,
-        amount: 125,
-        incidentDate: new Date().toISOString().split('T')[0],
-        incidentTime: '08:45:00',
-        payeeIdentity: 'Indian Railways (IRCTC)',
-        paymentGateway: 'IRCTC Passenger Reservation System',
-        ocrConfidence: '99.8%',
-        forensicStatus: 'REJECTED_INVALID_DOCUMENT',
-        sha256Hash: '9c8b7a6f5e4d3c2b1a0f9e8d7c6b5a4f3e2d1c0b9a8f7e6d5c4b3a2f1e0d9c8b',
-        tamperAnalysis: {
-          isTampered: false,
-          riskLevel: 'LOW',
-          flags: [],
-          details: 'Genuine IRCTC transit document.',
-        },
-        summary: 'Detected Indian Railways / IRCTC Train Ticket (Fare: ₹125). Routine transit ticket, not evidence of financial fraud or cybercrime.',
-        rejectionReason: 'Document is a routine railway journey ticket. Police cyber cells only admit proof of disputed unauthorized debits, scam communications, or phishing links.',
-      },
-    };
-    setEvidenceList((prev) => [...prev, ticketExhibit]);
-  };
-
   const handleDownload65BCertificate = async () => {
     setCertDownloading(true);
     try {
@@ -193,20 +160,10 @@ export const EvidencePage = () => {
           <button
             type="button"
             onClick={handleLoadDemoReceipt}
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-white border border-[#E5E2DE] hover:border-[#E6325B] text-xs font-bold text-[#0F172A] hover:text-[#E6325B] shadow-sm transition-all"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-[#E5E2DE] hover:border-[#E6325B] text-xs font-bold text-[#0F172A] hover:text-[#E6325B] shadow-sm transition-all"
           >
             <Sparkles className="w-4 h-4 text-[#E6325B]" />
-            <span>Sample UPI Receipt (₹45k)</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={handleLoadTrainTicketDemo}
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-white border border-amber-300 hover:border-amber-500 text-xs font-bold text-amber-900 shadow-sm transition-all"
-            title="Demonstrate rejecting non-cyber documents like railway tickets"
-          >
-            <AlertTriangle className="w-4 h-4 text-amber-600" />
-            <span>Test Train Ticket (₹125)</span>
+            <span>Sample Fraud Receipt</span>
           </button>
 
           <button
@@ -370,10 +327,10 @@ export const EvidencePage = () => {
                         <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-300 text-xs text-amber-950 space-y-1">
                           <div className="font-bold flex items-center gap-1.5 text-amber-900 font-mono">
                             <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
-                            <span>NON-CYBER DOCUMENT DETECTED: {forensic.documentCategory}</span>
+                            <span>NON-CYBERCRIME DOCUMENT DETECTED</span>
                           </div>
                           <p className="text-[11px] leading-relaxed text-amber-900">
-                            {forensic.rejectionReason || forensic.summary}
+                            {forensic.rejectionReason || 'This document is not related to an unauthorized digital transaction, cyber fraud, or cybercrime incident and cannot be admitted as evidence.'}
                           </p>
                         </div>
                       )}
