@@ -2,63 +2,10 @@ import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
+import { analyzeEvidenceDocument } from '@/services/visionForensics';
 
 const ALLOWED_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.pdf', '.mp3', '.wav', '.m4a', '.ogg'];
 const MAX_FILE_SIZE = 15 * 1024 * 1024; // 15 MB
-
-function extractForensicMetadata(rawFilename, buffer, ext) {
-  let strContent = '';
-  try {
-    strContent = buffer.toString('utf8', 0, Math.min(buffer.length, 50000));
-  } catch (e) {}
-
-  // 1. Detect 12-digit UTR or Transaction Reference Number
-  const utrMatch = strContent.match(/\b(UTR|Ref(?:erence)?|Txn(?: ID)?|UPI Ref(?:\s*No)?)[ :#-]*([0-9]{12})\b/i) ||
-                   strContent.match(/\b([0-9]{12})\b/) ||
-                   rawFilename.match(/\b([0-9]{12})\b/);
-
-  // 2. Detect Amount (e.g. ₹45000, Rs. 15,000, 25000)
-  const amountMatch = strContent.match(/(?:Rs\.?|INR|₹)\s*([\d,]+(?:\.\d{2})?)/i) ||
-                      strContent.match(/\b(?:amount|paid|debited)[^\d]*([\d,]+(?:\.\d{2})?)/i) ||
-                      rawFilename.match(/\b(\d{3,7})\b/);
-
-  // 3. Detect VPA or Beneficiary Phone
-  const vpaMatch = strContent.match(/[a-zA-Z0-9._-]+@(okhdfcbank|okaxis|oksbi|okicici|paytm|ybl|ibl|upi|axl)/i) ||
-                   strContent.match(/\b[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\b/);
-
-  const phoneMatch = strContent.match(/(?:\+91[-\s]?)?([6-9]\d{9})\b/) ||
-                     rawFilename.match(/(?:\+91)?[6-9]\d{9}/);
-
-  // 4. Infer Platform / App
-  let appName = 'UPI Payment Gateway';
-  if (/gpay|google\s*pay/i.test(strContent) || /gpay/i.test(rawFilename)) appName = 'Google Pay (GPay)';
-  else if (/phonepe/i.test(strContent) || /phonepe/i.test(rawFilename)) appName = 'PhonePe';
-  else if (/paytm/i.test(strContent) || /paytm/i.test(rawFilename)) appName = 'Paytm';
-  else if (/sbi|yono/i.test(strContent) || /sbi/i.test(rawFilename)) appName = 'YONO SBI / NetBanking';
-  else if (/hdfc/i.test(strContent) || /hdfc/i.test(rawFilename)) appName = 'HDFC NetBanking';
-  else if (/icici/i.test(strContent) || /icici/i.test(rawFilename)) appName = 'ICICI iMobile';
-
-  const utr = utrMatch ? (utrMatch[2] || utrMatch[1]) : `${Math.floor(412000000000 + Math.random() * 500000000000)}`;
-  const cleanAmount = amountMatch ? parseFloat(amountMatch[1].replace(/,/g, '')) : 25000;
-  const payee = vpaMatch ? vpaMatch[0] : (phoneMatch ? `+91 ${phoneMatch[1]}` : 'fraudulent.receiver@okhdfcbank');
-  const now = new Date();
-  const dateStr = now.toISOString().split('T')[0];
-  const timeStr = now.toTimeString().split(' ')[0];
-  const sha256 = crypto.createHash('sha256').update(buffer).digest('hex');
-
-  return {
-    utrNumber: utr,
-    amount: cleanAmount,
-    incidentDate: dateStr,
-    incidentTime: timeStr,
-    payeeIdentity: payee,
-    paymentGateway: appName,
-    ocrConfidence: '98.5%',
-    forensicStatus: 'VERIFIED_EXHIBIT',
-    sha256Hash: sha256,
-    summary: `Verified digital exhibit: Extracted UTR #${utr}, Amount: ₹${cleanAmount.toLocaleString('en-IN')}, Beneficiary: ${payee}. SHA-256: ${sha256.substring(0, 16)}...`,
-  };
-}
 
 export async function POST(request) {
   try {
@@ -98,8 +45,12 @@ export async function POST(request) {
 
     fs.writeFileSync(filePath, buffer);
 
-    // Perform Forensic Evidence Extraction
-    const forensic = extractForensicMetadata(rawFilename, buffer, ext);
+    // Perform True Multimodal Vision OCR, Document Classification & Tamper Analysis
+    const forensic = await analyzeEvidenceDocument({
+      buffer,
+      rawFilename,
+      mimetype: file.type || `image/${ext.replace('.', '')}`,
+    });
 
     return NextResponse.json({
       success: true,
