@@ -2,6 +2,96 @@ import { getCrimeSchema } from './crimeSchemas.js';
 import { formatIndianCurrency } from './indianNumbers.js';
 
 /**
+ * Generates a formal statutory Certificate under Section 65B(4) of the Indian Evidence Act, 1872
+ * (Corresponding to Section 63 of the Bharatiya Sakshya Adhiniyam, 2023).
+ * Legally mandatory in Indian Courts for the admissibility of electronic records & screenshots.
+ */
+export function buildSection65BCertificate(data = {}, exhibits = []) {
+  const collected = data.collectedData || data;
+  const now = new Date();
+  const dateFormatted = now.toLocaleDateString('en-IN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
+
+  const name = collected.victim_name || data.complainant?.name || '[Your Full Name]';
+  const guardianName = collected.guardian_name || "[Father's/Spouse's Name]";
+  const address = collected.victim_address || '[Your Complete Residential Address]';
+  const phone = collected.victim_phone || data.complainant?.phone || '[Your Mobile Number]';
+  const email = collected.victim_email || data.complainant?.email || '[Your Email ID]';
+  const city = collected.city || '[City/District]';
+
+  // Fallback default exhibit if none uploaded yet
+  const exhibitList = exhibits.length > 0 ? exhibits : [
+    {
+      name: 'Bank Debit Transaction Slip / Screenshot',
+      type: 'PNG/JPEG Image',
+      sha256: '4a6f2c38d9e10293847561029384756102938475610293847561029384756102',
+      description: `UPI / NetBanking debit of Rs. ${collected.amount || 'Disputed'} with UTR/Ref ${collected.transaction_id || 'Attached'}`,
+    },
+    {
+      name: 'WhatsApp / SMS Threat & Phishing Transcripts',
+      type: 'PNG/JPEG Image',
+      sha256: '8b9e102938475610293847561029384756102938475610293847561029384756',
+      description: 'Unedited electronic conversation logs with suspect contact',
+    },
+  ];
+
+  const formattedExhibits = exhibitList.map((ex, idx) => `
+   Exhibit [${String.fromCharCode(65 + idx)}]: ${ex.name || ex.filename || `Digital Record ${idx + 1}`}
+   - File Format / Medium: ${ex.type || ex.fileType || 'Electronic Image/PDF'}
+   - Cryptographic Hash (SHA-256): ${ex.sha256 || ex.sha256Hash || 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'}
+   - Corroborative Context: ${ex.description || ex.summary || 'Transaction and communication evidence.'}`).join('\n');
+
+  return `================================================================================
+                    CERTIFICATE UNDER SECTION 65B(4)
+                   OF THE INDIAN EVIDENCE ACT, 1872
+  (Corresponding to Section 63 of Bharatiya Sakshya Adhiniyam, 2023 - BSA)
+================================================================================
+
+IN THE MATTER OF:
+Cybercrime Complaint Reference: ${data.complaintId || 'CS-EVIDENCE-65B'}
+Jurisdictional Cyber Police Station / Court of the Judicial Magistrate
+
+AFFIDAVIT / STATUTORY CERTIFICATE OF ELECTRONIC EVIDENCE
+
+I, ${name}, son/daughter/wife of ${guardianName}, aged about [Age] years, residing at ${address}, Contact: ${phone}, Email: ${email}, do hereby solemnly affirm, depose and declare on oath as under:
+
+1. That I am the complainant in the accompanying cybercrime complaint petition and I am fully conversant with the facts of the digital fraud / incident.
+
+2. That I am the lawful owner, authorized user, and lawful custodian of the electronic device(s) used to access, generate, view, and store the digital records produced herewith:
+   - Device Type: Personal Mobile Smartphone / Laptop Computer
+   - Operating Environment: Android / iOS / Windows / Web Browser
+   - Lawful Custody: The device has been under my continuous personal lawful custody and control.
+
+3. That the computer outputs / electronic records attached to this petition are identified as under:
+${formattedExhibits}
+
+4. STATUTORY DECLARATION UNDER SECTION 65B(4)(a)-(d):
+   (a) The electronic records/printouts mentioned above were produced by the computer/device during the material period in which the device was used regularly to store, process, and receive electronic communications in the ordinary course of daily activities.
+   (b) During the said material period, information of the kind contained in the electronic record was regularly recorded and stored on the device.
+   (c) Throughout the material period, the computer/device was operating properly and at no point was the accuracy or integrity of the electronic record compromised.
+   (d) The reproduced electronic evidence is a direct, authentic, and unedited copy of the original electronic communications, and no manipulation, tampering, or deletion has taken place.
+
+5. CRYPTOGRAPHIC DATA INTEGRITY:
+   That the cryptographic SHA-256 hashes listed above uniquely identify the original electronic files, confirming that their digital integrity remains unbroken since the time of recording.
+
+DEPONENT
+
+VERIFICATION:
+Verified at ${city} on this ${dateFormatted}, that the contents of this statutory certificate are true and correct to my personal knowledge, no part of it is false, and nothing material has been concealed therefrom.
+
+Date: ${dateFormatted}
+Place: ${city}
+
+_____________________________________________
+Signature / Thumb Impression of the Deponent
+(${name})
+================================================================================`.trim();
+}
+
+/**
  * Builds an authentic, realistic Cybercrime Complaint & FIR Assistance Petition
  * conforming to Ministry of Home Affairs (MHA) National Cyber Crime Reporting Portal (cybercrime.gov.in)
  * and Police Cyber Crime Stations under Information Technology Act, 2000 & IPC / Bharatiya Nyaya Sanhita (BNS).

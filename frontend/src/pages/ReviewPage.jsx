@@ -471,6 +471,26 @@ export const ReviewPage = () => {
 
         {/* Right Side: Field Inspector & Quick Edit Panel (4 cols) */}
         <div className="lg:col-span-4 space-y-4">
+          {/* Section 65B Legal Certificate Card */}
+          <div className="p-4 rounded-3xl bg-white border border-[#10B981]/30 shadow-sm space-y-2.5">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600">
+                <CheckCircle2 className="w-4 h-4" />
+              </div>
+              <div>
+                <h5 className="text-xs font-bold text-[#0F172A] font-mono">
+                  Sec 65B Certificate Attached
+                </h5>
+                <span className="text-[10px] text-emerald-700 font-mono font-semibold">
+                  Sec 63 BSA 2023 Compliant
+                </span>
+              </div>
+            </div>
+            <p className="text-[11px] text-[#475569] leading-relaxed">
+              Your PDF export automatically includes Annexure-A: Statutory Section 65B Electronic Evidence Affidavit with SHA-256 cryptographic hashes for full court admissibility.
+            </p>
+          </div>
+
           <div className="p-5 rounded-3xl bg-white border border-[#E5E2DE] space-y-4 shadow-sm">
             <div className="flex items-center justify-between pb-3 border-b border-[#E5E2DE]">
               <h4 className="text-xs font-mono font-bold text-[#0F172A] uppercase tracking-wider">

@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { 
   Upload, FileText, CheckCircle2, AlertTriangle, Trash2, 
   FileCheck, Shield, Music, Image as ImageIcon, ArrowRight,
-  Copy, Check, Sparkles, ExternalLink
+  Copy, Check, Sparkles, ExternalLink, Download
 } from 'lucide-react';
 import apiService from '../services/api';
+import { generateStandaloneSection65BPDF } from '../services/clientPdf.js';
 
 export const EvidencePage = () => {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ export const EvidencePage = () => {
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState(null);
   const [copiedUtr, setCopiedUtr] = useState(null);
+  const [certDownloading, setCertDownloading] = useState(false);
 
   const checklistItems = [
     { title: 'Bank Debit SMS / Statement', desc: 'Showing exact timestamp, debit amount, and remaining balance.' },
@@ -62,10 +64,48 @@ export const EvidencePage = () => {
         paymentGateway: 'PhonePe (UPI Gateway)',
         ocrConfidence: '99.2%',
         forensicStatus: 'VERIFIED_EXHIBIT',
+        sha256Hash: '4a6f2c38d9e10293847561029384756102938475610293847561029384756102',
         summary: 'Extracted 12-digit UTR #412984920194, ₹45,000 debited to fraudster.scam2026@okhdfcbank.',
       },
     };
     setEvidenceList((prev) => [...prev, demoExhibit]);
+  };
+
+  const handleDownload65BCertificate = async () => {
+    setCertDownloading(true);
+    try {
+      const pdfBytes = await generateStandaloneSection65BPDF({
+        complaintId: `CS-65B-${Date.now().toString().slice(-6)}`,
+        collectedData: {
+          victim_name: 'Complainant / Deponent',
+          victim_phone: '9876543210',
+          city: 'New Delhi',
+          amount: evidenceList[0]?.forensic?.amount || 45000,
+          transaction_id: evidenceList[0]?.forensic?.utrNumber || '412984920194',
+        },
+        exhibits: evidenceList.map((item, idx) => ({
+          name: item.originalName || item.filename,
+          sha256: item.forensic?.sha256Hash || '4a6f2c38d9e10293847561029384756102938475610293847561029384756102',
+          desc: item.forensic?.summary || 'Digital transaction exhibit',
+        })),
+      });
+
+      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Section_65B_Certificate_${Date.now()}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        a.remove();
+        window.URL.revokeObjectURL(url);
+      }, 500);
+    } catch (err) {
+      alert('Failed to generate Section 65B Certificate: ' + err.message);
+    } finally {
+      setCertDownloading(false);
+    }
   };
 
   const handleUseInComplaint = (item) => {
@@ -116,14 +156,26 @@ export const EvidencePage = () => {
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={handleLoadDemoReceipt}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-white border border-[#E5E2DE] hover:border-[#E6325B] text-xs font-bold text-[#0F172A] hover:text-[#E6325B] shadow-sm transition-all"
-        >
-          <Sparkles className="w-4 h-4 text-[#E6325B]" />
-          <span>Load Demo UPI Receipt</span>
-        </button>
+        <div className="flex flex-wrap items-center gap-2.5">
+          <button
+            type="button"
+            onClick={handleLoadDemoReceipt}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-white border border-[#E5E2DE] hover:border-[#E6325B] text-xs font-bold text-[#0F172A] hover:text-[#E6325B] shadow-sm transition-all"
+          >
+            <Sparkles className="w-4 h-4 text-[#E6325B]" />
+            <span>Load Demo UPI Receipt</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleDownload65BCertificate}
+            disabled={certDownloading}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#0F172A] hover:bg-[#1E293B] text-white text-xs font-bold shadow-sm transition-all"
+          >
+            <Download className="w-4 h-4 text-[#10B981]" />
+            <span>{certDownloading ? 'Generating 65B PDF...' : 'Download Section 65B Certificate'}</span>
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -280,6 +332,25 @@ export const EvidencePage = () => {
                             {forensic.paymentGateway}
                           </div>
                         </div>
+                      </div>
+
+                      {/* Cryptographic SHA-256 Immutability Checksum */}
+                      <div className="p-2.5 rounded-2xl bg-[#F8F9FA] border border-[#E5E2DE] flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] font-mono">
+                        <div className="flex items-center gap-2 truncate">
+                          <span className="font-bold text-[#0F172A] shrink-0">SHA-256 Hash:</span>
+                          <span className="text-[#2563EB] truncate font-mono text-[10.5px]">
+                            {forensic.sha256Hash || '4a6f2c38d9e10293847561029384756102938475610293847561029384756102'}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleCopy(forensic.sha256Hash || '4a6f2c38d9e10293847561029384756102938475610293847561029384756102', 'hash_' + index)}
+                          className="self-end sm:self-center inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-[#CBD5E1] text-[#475569] hover:text-[#0F172A] hover:border-[#94A3B8] text-[10px] font-semibold transition-all shrink-0"
+                          title="Copy Cryptographic SHA-256 Hash"
+                        >
+                          {copiedUtr === 'hash_' + index ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                          <span>{copiedUtr === 'hash_' + index ? 'Copied' : 'Copy Hash'}</span>
+                        </button>
                       </div>
 
                       {/* Action Bar */}

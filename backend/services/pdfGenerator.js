@@ -2,7 +2,7 @@ import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
 import fs from 'fs';
 import path from 'path';
-import { buildFormalEnglishComplaint, buildTranslatedComplaint } from './complaintTextBuilder.js';
+import { buildFormalEnglishComplaint, buildTranslatedComplaint, buildSection65BCertificate } from './complaintTextBuilder.js';
 
 export async function generateComplaintPdfDocument(complaintData) {
   const pdfDoc = await PDFDocument.create();
@@ -153,6 +153,13 @@ export async function generateComplaintPdfDocument(complaintData) {
     drawHeading('TRANSLATED COPY / क्षेत्रीय भाषा प्रतिलिपि', rgb(0.55, 0.35, 0.95));
     drawParagraph(translatedText, customFont, 9, rgb(0.2, 0.2, 0.25));
   }
+
+  // Annexure: Section 65B(4) Indian Evidence Act Statutory Certificate
+  const sec65BText = buildSection65BCertificate(complaintData, complaintData.exhibits || []);
+  page = pdfDoc.addPage([pageWidth, pageHeight]);
+  y = pageHeight - margin;
+  drawHeading('ANNEXURE - CERTIFICATE UNDER SECTION 65B(4) EVIDENCE ACT (SEC 63 BSA)', rgb(0.1, 0.5, 0.3));
+  drawParagraph(sec65BText, fallbackFont, 8.5, rgb(0.15, 0.15, 0.15));
 
   // Official Disclaimer in Footer
   const pages = pdfDoc.getPages();

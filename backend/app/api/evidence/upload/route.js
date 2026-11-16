@@ -44,6 +44,7 @@ function extractForensicMetadata(rawFilename, buffer, ext) {
   const now = new Date();
   const dateStr = now.toISOString().split('T')[0];
   const timeStr = now.toTimeString().split(' ')[0];
+  const sha256 = crypto.createHash('sha256').update(buffer).digest('hex');
 
   return {
     utrNumber: utr,
@@ -54,7 +55,8 @@ function extractForensicMetadata(rawFilename, buffer, ext) {
     paymentGateway: appName,
     ocrConfidence: '98.5%',
     forensicStatus: 'VERIFIED_EXHIBIT',
-    summary: `Verified digital exhibit: Extracted UTR #${utr}, Amount: ₹${cleanAmount.toLocaleString('en-IN')}, Beneficiary: ${payee}.`,
+    sha256Hash: sha256,
+    summary: `Verified digital exhibit: Extracted UTR #${utr}, Amount: ₹${cleanAmount.toLocaleString('en-IN')}, Beneficiary: ${payee}. SHA-256: ${sha256.substring(0, 16)}...`,
   };
 }
 

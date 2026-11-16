@@ -1,1 +1,1 @@
-export { buildFormalEnglishComplaint, buildTranslatedComplaint } from '../../shared/complaintTextBuilder.js';
+export { buildFormalEnglishComplaint, buildTranslatedComplaint, buildSection65BCertificate } from '../../shared/complaintTextBuilder.js';
